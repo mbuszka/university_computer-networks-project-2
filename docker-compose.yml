@@ -1,0 +1,55 @@
+version: '2'
+services:
+  a:
+    build: .
+    networks:
+      ab:
+        ipv4_address: 172.16.1.13
+  b:
+    build: .
+    networks:
+      ab:
+        ipv4_address: 172.16.1.14
+      bc:
+        ipv4_address: 192.168.2.10
+      bd:
+        ipv4_address: 10.0.1.2
+  c:
+    build: .
+    networks:
+      bc:
+        ipv4_address: 192.168.2.5
+      cd:
+        ipv4_address: 192.168.5.5
+  d:
+    build: .
+    networks:
+      bd:
+        ipv4_address: 10.0.1.1
+      cd:
+        ipv4_address: 192.168.5.43
+networks:
+  ab:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.0.0/16
+  bc:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.2.0/24
+  bd:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.0.0/8
+  cd:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.5.0/24
