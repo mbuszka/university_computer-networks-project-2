@@ -1,0 +1,3 @@
+#!/bin/bash
+
+maciej_buszka/router < "in/$MACHINE_NAME"

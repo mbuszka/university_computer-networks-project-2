@@ -1,6 +1,6 @@
 FROM debian:jessie
 
-ADD maciej_buszka /sources
+ADD . /sources
 WORKDIR /sources
 
 CMD ["sleep", "infinity"]
