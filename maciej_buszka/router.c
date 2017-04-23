@@ -22,6 +22,7 @@
 
 #define TURN 5
 #define UNREACHABLE UINT32_MAX
+#define DOUBT_PERIOD 3
 
 void send_table(int stream) {
   for (int i=0; i<direct_count; i++) {
@@ -30,39 +31,48 @@ void send_table(int stream) {
     bcast.s_addr  = table[i].network_addr.s_addr | htonl(mask);
     for (int j=0; j<entry_count; j++) {
       entry_t entry = table[j];
-      if (entry.age <= 0) entry.distance = UNREACHABLE;
-      if (entry.age > -3 || i == j)
-        send_entry(stream, bcast, &entry);
+      if (entry.reachable <= 0) entry.distance = UNREACHABLE;
+
+      // send if only recently lost connection, or this is the target network
+      if (entry.reachable > -3 || i == j) {
+        if (0 > send_entry(stream, bcast, &entry)) {
+          if (errno == ENOTCONN || errno == ENETUNREACH) mark_unreachable(i);
+          else { printf("%d\n", errno); fail(errno); }
+        }
+      }
     }
   }
 }
 
 void age_connections() {
-  for (int i=0; i<entry_count; i++) {
-    table[i].age--;
-    if (table[i].age <= 0 && i >= direct_count)
-      table[i].distance = UNREACHABLE;
-    if (table[i].age < -2 && i >= direct_count)
-      rem_entry(i);
+  for (int i=0; i<direct_count; i++) {
+    table[i].reachable--;
+    if (table[i].reachable <= 0) mark_unreachable(i);
+  }
+
+  for (int i=direct_count; i<entry_count; i++) {
+    if (table[i].reachable <= 0) table[i].reachable--;
+    if (table[i].reachable < -3) rem_entry(i);
   }
 }
 
 void handle_incoming(entry_t *entry) {
-  entry->age = INIT_AGE;
   int idx = find_entry_network(entry->network_addr);
   int via = find_entry_network(entry->router_addr);
   assert(via >= 0);
 
   if (table[via].router_addr.s_addr == entry->router_addr.s_addr) return;
-  table[via].age = INIT_AGE;
+
+  table[via].reachable = DOUBT_PERIOD;
 
   if (entry->distance == UNREACHABLE) {
     if (table[idx].router_addr.s_addr == entry->router_addr.s_addr) {
-      table[idx].distance = UNREACHABLE;
+      mark_unreachable(idx);
     }
     return;
   }
 
+  entry->reachable = 1;
   entry->distance += table[via].distance;
   if (idx < 0) {
     add_entry(entry);

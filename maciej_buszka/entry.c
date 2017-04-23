@@ -41,13 +41,17 @@ void add_entry(entry_t *e) {
   table[entry_count++] = *e;
 }
 
+int is_in_network(addr_t ip, int idx) {
+  int32_t mask = 0x80000000;
+  mask >>= table[idx].prefix_len - 1;
+  mask = htonl(mask);
+  return (table[idx].network_addr.s_addr == (ip.s_addr & mask));
+}
+
 int find_entry_network(addr_t ip) {
   int idx = 0;
   while (idx < entry_count) {
-    int32_t mask = 0x80000000;
-    mask >>= table[idx].prefix_len - 1;
-    mask = htonl(mask);
-    if (table[idx].network_addr.s_addr == (ip.s_addr & mask)) break;
+    if (is_in_network(ip, idx)) break;
     idx++;
   }
 
@@ -60,6 +64,17 @@ void rem_entry(int idx) {
     entry_count--;
   } else {
     table[idx] = table[--entry_count];
+  }
+}
+
+void mark_unreachable(int idx) {
+  if (table[idx].reachable > 0) {
+    table[idx].reachable = 0;
+  }
+  if (idx < direct_count) {
+    for (int i=direct_count; i<entry_count; i++)
+      if (is_in_network(table[i].router_addr, idx))
+        mark_unreachable(i);
   }
 }
 
@@ -78,14 +93,14 @@ void read_entry(entry_t *entry) {
   uint32_t addr = ntohl(entry->router_addr.s_addr);
   entry->network_addr.s_addr = htonl(addr & mask);
   entry->connection_type = CONNECTION_DIRECT;
-  entry->age             = 0;
+  entry->reachable = 0;
 }
 
 void show_entry(entry_t *entry) {
   char addr[30];
   inet_ntop(AF_INET, &entry->network_addr, addr, 30);
   printf("%s/%d ", addr, entry->prefix_len);
-  if (entry->age <= 0) {
+  if (entry->reachable <= 0) {
     printf("unreachable ");
   } else {
     printf("distance %u ", entry->distance);

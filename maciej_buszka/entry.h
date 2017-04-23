@@ -8,11 +8,9 @@ typedef struct in_addr addr_t;
 #define CONNECTION_DIRECT 0
 #define CONNECTION_VIA    1
 
-#define INIT_AGE 3
-
 typedef struct {
   int      connection_type;
-  int      age;
+  int      reachable; // yes if > 0
   addr_t   router_addr;
   addr_t   network_addr;
   uint8_t  prefix_len;
@@ -33,5 +31,6 @@ void rem_entry(int idx);
 void read_entry(entry_t *entry);
 void show_entry(entry_t *entry);
 void show_table();
+void mark_unreachable(int idx);
 
 #endif
