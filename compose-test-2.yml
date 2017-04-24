@@ -4,15 +4,19 @@ services:
     build: .
     environment:
       - MACHINE_NAME=a
+      - TEST_SUITE=test-2
     volumes:
       - .:/sources
     networks:
       ab:
         ipv4_address: 172.16.1.13
+      ad:
+        ipv4_address: 192.168.17.200
   b:
     build: .
     environment:
       - MACHINE_NAME=b
+      - TEST_SUITE=test-2
     volumes:
       - .:/sources
     networks:
@@ -20,12 +24,11 @@ services:
         ipv4_address: 172.16.1.14
       bc:
         ipv4_address: 192.168.2.10
-      bd:
-        ipv4_address: 11.0.1.2
   c:
     build: .
     environment:
       - MACHINE_NAME=c
+      - TEST_SUITE=test-2
     volumes:
       - .:/sources
     networks:
@@ -37,11 +40,12 @@ services:
     build: .
     environment:
       - MACHINE_NAME=d
+      - TEST_SUITE=test-2
     volumes:
       - .:/sources
     networks:
-      bd:
-        ipv4_address: 11.0.1.1
+      ad:
+        ipv4_address: 192.168.17.220
       cd:
         ipv4_address: 192.168.5.43
 networks:
@@ -59,13 +63,6 @@ networks:
       driver: default
       config:
         - subnet: 192.168.2.0/24
-  bd:
-    internal: true
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 11.0.0.0/8
   cd:
     internal: true
     driver: bridge
@@ -73,3 +70,10 @@ networks:
       driver: default
       config:
         - subnet: 192.168.5.0/24
+  ad:
+    internal: true
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.17.128/25

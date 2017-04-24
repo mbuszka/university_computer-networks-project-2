@@ -1,0 +1,79 @@
+version: '2'
+services:
+  a:
+    build: .
+    environment:
+      - MACHINE_NAME=a
+      - TEST_SUITE=test-1
+    volumes:
+      - .:/sources
+    networks:
+      ab:
+        ipv4_address: 172.16.1.13
+  b:
+    build: .
+    environment:
+      - MACHINE_NAME=b
+      - TEST_SUITE=test-1
+    volumes:
+      - .:/sources
+    networks:
+      ab:
+        ipv4_address: 172.16.1.14
+      bc:
+        ipv4_address: 192.168.2.10
+      bd:
+        ipv4_address: 11.0.1.2
+  c:
+    build: .
+    environment:
+      - MACHINE_NAME=c
+      - TEST_SUITE=test-1
+    volumes:
+      - .:/sources
+    networks:
+      bc:
+        ipv4_address: 192.168.2.5
+      cd:
+        ipv4_address: 192.168.5.5
+  d:
+    build: .
+    environment:
+      - MACHINE_NAME=d
+      - TEST_SUITE=test-1
+    volumes:
+      - .:/sources
+    networks:
+      bd:
+        ipv4_address: 11.0.1.1
+      cd:
+        ipv4_address: 192.168.5.43
+networks:
+  ab:
+    internal: true
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.0.0/16
+  bc:
+    internal: true
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.2.0/24
+  bd:
+    internal: true
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 11.0.0.0/8
+  cd:
+    internal: true
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.5.0/24

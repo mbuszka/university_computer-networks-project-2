@@ -23,6 +23,7 @@
 #define TURN 5
 #define UNREACHABLE UINT32_MAX
 #define DOUBT_PERIOD 3
+#define PREVENT_COUNTING_TO_INF 20
 
 void send_table(int stream) {
   for (int i=0; i<direct_count; i++) {
@@ -74,12 +75,14 @@ void handle_incoming(entry_t *entry) {
 
   entry->reachable = 1;
   entry->distance += table[via].distance;
+  if (entry->distance > PREVENT_COUNTING_TO_INF) return;
   if (idx < 0) {
     add_entry(entry);
   } else {
     if (table[idx].connection_type == CONNECTION_DIRECT) {
       return;
-    } else if (entry->distance <= table[idx].distance) {
+    } else if (  entry->distance <= table[idx].distance
+              || table[idx].reachable <= 0) {
       table[idx] = *entry;
     }
   }
