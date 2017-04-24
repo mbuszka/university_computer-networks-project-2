@@ -1,3 +1,8 @@
+/*
+  Maciej Buszka
+  279129
+*/
+
 #include "connect.h"
 #include <arpa/inet.h>
 #include <errno.h>

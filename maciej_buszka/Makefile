@@ -1,3 +1,8 @@
+#
+# Maciej Buszka
+# 279129
+#
+
 CC = gcc
 CFLAGS = -std=gnu11 -Wall -Wextra
 

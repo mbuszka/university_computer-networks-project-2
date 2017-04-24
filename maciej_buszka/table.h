@@ -1,3 +1,8 @@
+/*
+  Maciej Buszka
+  279129
+*/
+
 #include "entry.h"
 
 typedef struct {

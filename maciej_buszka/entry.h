@@ -1,3 +1,8 @@
+/*
+  Maciej Buszka
+  279129
+*/
+
 #ifndef ENTRY_H
 #define ENTRY_H
 

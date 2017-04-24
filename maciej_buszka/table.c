@@ -1,3 +1,8 @@
+/*
+  Maciej Buszka
+  279129
+*/
+
 #include "util.h"
 #include "table.h"
 

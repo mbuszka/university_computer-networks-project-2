@@ -1,3 +1,8 @@
+/*
+  Maciej Buszka
+  279129
+*/
+
 #ifndef CONNECT_H
 #define CONNECT_H
 

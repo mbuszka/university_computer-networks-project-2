@@ -1,3 +1,8 @@
+/*
+  Maciej Buszka
+  279129
+*/
+
 #ifndef UTIL_H
 #define UTIL_H
 
