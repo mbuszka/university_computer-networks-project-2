@@ -1,7 +1,6 @@
 #ifndef CONNECT_H
 #define CONNECT_H
 
-#include <stdint.h>
 #include "entry.h"
 
 int subscribe();
